@@ -118,7 +118,7 @@ namespace Meeting_App
                 {
                     Console.WriteLine("Would you like to add conflicting meeting? Y/N");
                     string userinput1 = Console.ReadLine();
-                    if (userinput1 == "Y")
+                    if (userinput1.ToUpper() == "Y" )
                     {
                         hasConflict = false;
                         
