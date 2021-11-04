@@ -85,7 +85,7 @@ namespace Meeting_App
         public static Meeting AddEvent(List<Meeting> calendar)
         {
 
-            Meeting newMeeting = new Meeting();
+            Meeting newMeeting = new Meeting();            
             bool hasConflict = false;
             do
             {
@@ -104,21 +104,33 @@ namespace Meeting_App
                     {                        
                         Console.WriteLine("This is a conflicting meeting!");
                         hasConflict = true;
+                       
                     }
-
-                }
-
-                if (hasConflict)
-                {                    
-                    Console.WriteLine("Would you like to add meeting with conflict? Y/N");
-                    string userinput1 = Console.ReadLine();
-                    if (userinput1 == "Y")
-                    { 
+                    else
+                    {
+                        
                         hasConflict = false;
                     }
+
+                }
+                
+                if (hasConflict == true)
+                {
+                    Console.WriteLine("Would you like to add conflicting meeting? Y/N");
+                    string userinput1 = Console.ReadLine();
+                    if (userinput1 == "Y")
+                    {
+                        hasConflict = false;
+                        
+                    }
+                    else
+                    {
+                        hasConflict = true;
+                    } 
                 }
 
-            } while (hasConflict);
+
+            } while (hasConflict == true);
 
             return newMeeting;
             
