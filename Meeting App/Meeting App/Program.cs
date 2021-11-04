@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Meeting_App
 {
@@ -64,10 +65,15 @@ namespace Meeting_App
             StartDateTime = startTime;
             EndDateTime = endtime;
         }
-        public override string ToString()
+
+        public Meeting()
         {
-            return string.Format("{0} at {1} on {2} from {3} to {4}", Title, Location, StartDateTime.ToString("MM/dd"), StartDateTime.ToString("HH:mm"), EndDateTime.ToString("HH:mm"));
+
         }
+        //public override string ToString()
+        //{
+        //    return string.Format("{0} at {1} on {2} from {3} to {4}", Title, Location, StartDateTime.ToString("MM/dd"), StartDateTime.ToString("HH:mm"), EndDateTime.ToString("HH:mm"));
+        //}
 
     }
     
@@ -76,25 +82,92 @@ namespace Meeting_App
     
     class Program
     {
+        public static Meeting AddEvent(List<Meeting> calendar)
+        {
+
+            Meeting newMeeting = new Meeting();
+            bool hasConflict = false;
+            do
+            {
+                Console.WriteLine("Enter the event Title:");
+                newMeeting.Title = Console.ReadLine();
+                Console.WriteLine("Enter the event location");
+                newMeeting.Location = Console.ReadLine();
+                Console.WriteLine("Enter the start date and time: MM/DD/YYYY HH:MM");
+                newMeeting.StartDateTime = DateTime.Parse(Console.ReadLine());
+                Console.WriteLine("Enter the end date and time: MM/DD/YYYY HH:MM");
+                newMeeting.EndDateTime = DateTime.Parse(Console.ReadLine());
+                foreach (Meeting eachMeeting in calendar)
+                {
+                    
+                    if (eachMeeting.StartDateTime >= newMeeting.StartDateTime && eachMeeting.EndDateTime >= newMeeting.EndDateTime)
+                    {                        
+                        Console.WriteLine("This is a conflicting meeting!");
+                        hasConflict = true;
+                    }
+
+                }
+
+                if (hasConflict)
+                {                    
+                    Console.WriteLine("Would you like to add meeting with conflict? Y/N");
+                    string userinput1 = Console.ReadLine();
+                    if (userinput1 == "Y")
+                    { 
+                        hasConflict = false;
+                    }
+                }
+
+            } while (hasConflict);
+
+            return newMeeting;
+            
+        }
+        public static void CalendarPrint(List<Meeting> calendar)
+        {
+            DateTime date;
+            Console.WriteLine("Choose a date: MM/DD/YYYY");
+            string userInput = Console.ReadLine();
+            date = DateTime.Parse(userInput);
+            for (date = date.AddHours(8); date.Hour <= 17; date = date.AddMinutes(30))
+            {
+                Console.Write(date.ToString());
+                foreach (Meeting meeting in calendar)
+                {
+                    if (meeting.StartDateTime <= date && meeting.EndDateTime > date)
+                    {
+                        Console.Write(" | " + meeting.Title + " at " + meeting.Location);
+                    }
+                }
+                Console.Write("\n");
+            }
+
+        }
+    
         public static void CalendarMenu(List<Meeting> calendar)
         {
             bool run = true;
+            
             do
             {
-                Console.WriteLine("Enter Menu Option:\n1. Add event\n2. Remove event\n3. Display calendar\n4. Return to previous menu");
+                Console.WriteLine("Enter Menu Option:\n1. Add event\n2. Remove event\n3. Display calendar\n4. Save Calendar\n5. Return to previous menu");
                 string menuInput = Console.ReadLine();
                 switch (menuInput)
                 {
-                    case "1":
-                        //write method for adding event
+                    case "1":                        
+                        calendar.Add(AddEvent(calendar));
                         break;
                     case "2":
                         //write method to remove event
                         break;
                     case "3":
+                        CalendarPrint(calendar);
                         //write method to display calendar
                         break;
                     case "4":
+                        //write method to save calender
+                        break;
+                    case "5":
                         run = false;
                         break;
                     default:
@@ -108,6 +181,7 @@ namespace Meeting_App
         {
             bool run = true;
             List<Meeting> currentCalendar = new List<Meeting>();
+            List<Meeting> calendar = new List<Meeting>();
             do
             {
                 Console.WriteLine("Welcome to Meeting App!" + "\n");
@@ -122,6 +196,7 @@ namespace Meeting_App
                                 Console.WriteLine("Enter the file location");
                                 string fileLocation = Console.ReadLine();
                                 //method or code to read file and save to variable
+                                string[] calenderArray = File.ReadAllLines(@fileLocation);
                                 //method for menu
                                 //method for saving location?
                                 break;
@@ -146,9 +221,9 @@ namespace Meeting_App
 
                 
                 //this is a place holder for exceptions
-                catch (Exception)
+                catch (Exception e)
                 {
-                    Console.WriteLine("This is a place holder");
+                    Console.WriteLine($"An error occured. Message={e.Message} StackTrace={e.StackTrace}");
                 }
 
 
