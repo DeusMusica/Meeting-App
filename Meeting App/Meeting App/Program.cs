@@ -76,19 +76,49 @@ namespace Meeting_App
         //}
 
     }
-    
-    
 
-    
+
+
+
     class Program
     {
+        public static Meeting? RemoveEvent(List<Meeting> calendar)
+        {
+            Meeting returnOFTheJedi = new Meeting();
+            Console.WriteLine("Enter the date of event you want removed:");
+            DateTime dateInput = DateTime.Parse(Console.ReadLine());
+            Console.WriteLine("Enter the event Title you want removed:");
+            string titleInput = Console.ReadLine();
+            int index = -1;
+
+
+            foreach (Meeting meeting in calendar)
+            {
+                if (meeting.StartDateTime.Day == dateInput.Day && meeting.Title == titleInput)
+                {
+                    index = calendar.IndexOf(meeting);
+                }
+
+            }
+            if (index == -1)
+            {
+                return null;
+            }
+            else
+            {
+                return calendar[index];
+            }
+
+        }
+
         public static Meeting AddEvent(List<Meeting> calendar)
         {
 
-            Meeting newMeeting = new Meeting();            
+            Meeting newMeeting = new Meeting();
             bool hasConflict = false;
             do
             {
+                //add input validation for datetime
                 Console.WriteLine("Enter the event Title:");
                 newMeeting.Title = Console.ReadLine();
                 Console.WriteLine("Enter the event location");
@@ -99,44 +129,45 @@ namespace Meeting_App
                 newMeeting.EndDateTime = DateTime.Parse(Console.ReadLine());
                 foreach (Meeting eachMeeting in calendar)
                 {
-                    
+
                     if (eachMeeting.StartDateTime >= newMeeting.StartDateTime && eachMeeting.EndDateTime >= newMeeting.EndDateTime)
-                    {                        
-                        Console.WriteLine("This is a conflicting meeting!");
+                    {
+                        Console.WriteLine("This is a conflicting meeting!\n");
                         hasConflict = true;
-                       
+
                     }
                     else
                     {
-                        
+
                         hasConflict = false;
                     }
 
                 }
-                
+
                 if (hasConflict == true)
                 {
-                    Console.WriteLine("Would you like to add conflicting meeting? Y/N");
+                    Console.WriteLine("Would you like to add conflicting meeting? Y/N\n");
                     string userinput1 = Console.ReadLine();
-                    if (userinput1.ToUpper() == "Y" )
+                    if (userinput1.ToUpper() == "Y")
                     {
                         hasConflict = false;
-                        
+
                     }
                     else
                     {
                         hasConflict = true;
-                    } 
+                    }
                 }
 
 
             } while (hasConflict == true);
 
             return newMeeting;
-            
+
         }
         public static void CalendarPrint(List<Meeting> calendar)
         {
+            //input validation
             DateTime date;
             Console.WriteLine("Choose a date: MM/DD/YYYY");
             string userInput = Console.ReadLine();
@@ -155,39 +186,64 @@ namespace Meeting_App
             }
 
         }
-    
-        public static void CalendarMenu(List<Meeting> calendar)
+
+        public static void CalendarMenu(List<Meeting> calendar, string location, string fileName)
         {
             bool run = true;
-            
+
             do
             {
                 Console.WriteLine("Enter Menu Option:\n1. Add event\n2. Remove event\n3. Display calendar\n4. Save Calendar\n5. Return to previous menu");
                 string menuInput = Console.ReadLine();
                 switch (menuInput)
                 {
-                    case "1":                        
+                    case "1":
                         calendar.Add(AddEvent(calendar));
                         break;
                     case "2":
+                        Meeting removedMeet = RemoveEvent(calendar);
+                        if (removedMeet == null)
+                        {
+                            Console.WriteLine("No event removed\n");
+                            break;
+                        }
+                        else
+                        {
+                            calendar.Remove(removedMeet);
+                        }
                         //write method to remove event
                         break;
                     case "3":
                         CalendarPrint(calendar);
-                        //write method to display calendar
                         break;
                     case "4":
                         //write method to save calender
+                        CalendarSave(calendar, location, fileName);
                         break;
                     case "5":
                         run = false;
                         break;
                     default:
-                        Console.WriteLine("Invalid input");
+                        Console.WriteLine("Invalid input\n");
                         break;
                 }
             }
             while (run == true);
+        }
+
+        public static void CalendarSave(List<Meeting> calendar, string location, string fileName)
+        {
+            //maybe set it up so user can type in name of save file.
+
+            string path = location + @fileName;
+            string saveString = "";
+            foreach (Meeting meeting in calendar)
+            {
+                saveString += (meeting.Title + "," + meeting.Location + "," + meeting.StartDateTime.ToString() + "," + meeting.EndDateTime.ToString() + "\n");
+            }
+
+            File.WriteAllText(path, saveString);
+            Console.WriteLine("\nSaved Successfully\n");
         }
         static void Main(string[] args)
         {
@@ -196,6 +252,7 @@ namespace Meeting_App
             List<Meeting> calendar = new List<Meeting>();
             do
             {
+                //don't need the + with \n
                 Console.WriteLine("Welcome to Meeting App!" + "\n");
                 Console.Write("What would you like to do?\n1. Load calendar from file\n2. Create new calendar\n0. Exit\n");
                 string mainMenuChoice = Console.ReadLine();
@@ -204,8 +261,8 @@ namespace Meeting_App
                     {
                         switch (mainMenuChoice)
                         {
-                            case "1": 
-                                Console.WriteLine("Enter the file location");
+                            case "1":
+                                Console.WriteLine("Enter the file location\n");
                                 string fileLocation = Console.ReadLine();
                                 //method or code to read file and save to variable
                                 string[] calenderArray = File.ReadAllLines(@fileLocation);
@@ -213,17 +270,28 @@ namespace Meeting_App
                                 //method for saving location?
                                 break;
                             case "2":
+
+                                //default location 
+                                //string saveLocation = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+                                //Console.WriteLine("File location is:" + saveLocation);
+                                
+                                //asking location
                                 Console.WriteLine("Enter save location:");
                                 string saveLocation = Console.ReadLine();
+
+                                Console.WriteLine("Give file name:");
+                                string fileName = Console.ReadLine();
+                                fileName = "\\" + fileName + ".dat";
                                 //Method name for new menu
-                                CalendarMenu(currentCalendar);
+                                CalendarMenu(currentCalendar, saveLocation, fileName);
                                 //method for saving location
+
                                 break;
                             case "0":
                                 run = false;
                                 break;
                             default:
-                                Console.WriteLine("Invalid Input");
+                                Console.WriteLine("Invalid Input\n");
                                 break;
                         }
 
@@ -231,7 +299,7 @@ namespace Meeting_App
                     }
                 }
 
-                
+
                 //this is a place holder for exceptions
                 catch (Exception e)
                 {
