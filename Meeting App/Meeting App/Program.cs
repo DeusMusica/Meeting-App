@@ -233,8 +233,7 @@ namespace Meeting_App
 
         public static void CalendarSave(List<Meeting> calendar, string location, string fileName)
         {
-            //maybe set it up so user can type in name of save file.
-
+            
             string path = location + @fileName;
             string saveString = "";
             foreach (Meeting meeting in calendar)
@@ -275,7 +274,7 @@ namespace Meeting_App
             do
             {
                 //don't need the + with \n
-                Console.WriteLine("Welcome to Meeting App!" + "\n");
+                Console.WriteLine("Welcome to Meeting App!\n");
                 Console.Write("What would you like to do?\n1. Load calendar from file\n2. Create new calendar\n0. Exit\n");
                 string mainMenuChoice = Console.ReadLine();
                 try
@@ -284,17 +283,14 @@ namespace Meeting_App
                         switch (mainMenuChoice)
                         {
                             case "1":
-                                Console.WriteLine("Enter the file location\n");
+                                Console.WriteLine("Enter the file location");
                                 string fileLocation = Console.ReadLine();
                                 Console.WriteLine("Give file name:");
 
                                 string loadFileNameInput = Console.ReadLine();
-                                string loadFileName = "\\" + loadFileNameInput + ".dat";
-                                //method or code to read file and save to variable
+                                string loadFileName = "\\" + loadFileNameInput + ".dat";                               
                                 currentCalendar = CalendarLoad(fileLocation, loadFileName);
                                 CalendarMenu(currentCalendar, fileLocation, loadFileName);
-                                //method for menu
-                                //method for saving location?
                                 break;
                             case "2":
 
@@ -309,7 +305,7 @@ namespace Meeting_App
                                 Console.WriteLine("Give file name:");
                                 string saveFileNameInput = Console.ReadLine();
                                 string saveFileName = "\\" + saveFileNameInput + ".dat";
-                                //Method name for new menu
+                                
                                 CalendarMenu(currentCalendar, saveLocation, saveFileName);
                                 //method for saving location
 
