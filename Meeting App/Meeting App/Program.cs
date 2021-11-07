@@ -245,9 +245,31 @@ namespace Meeting_App
             File.WriteAllText(path, saveString);
             Console.WriteLine("\nSaved Successfully\n");
         }
+
+        public static List<Meeting> CalendarLoad(string fileLocation, string fileName)
+        {
+            List<Meeting> readEvents = new List<Meeting>();
+            string path = fileLocation + @fileName;
+            string[] calenderArray = File.ReadAllLines(path);
+
+            foreach (string fileLine in calenderArray)
+            {
+                string[] fileLineData = fileLine.Split(",");
+                string title = fileLineData[0];
+                string location = fileLineData[1];
+                DateTime startDateTime = DateTime.Parse(fileLineData[2]);
+                DateTime endDateTime = DateTime.Parse(fileLineData[3]);
+
+                Meeting readEvent = new Meeting(title, location, startDateTime, endDateTime);
+                readEvents.Add(readEvent);
+
+            }
+            return readEvents;
+        }
         static void Main(string[] args)
         {
             bool run = true;
+            List<Meeting> returnedCalendar = new List<Meeting>();
             List<Meeting> currentCalendar = new List<Meeting>();
             List<Meeting> calendar = new List<Meeting>();
             do
@@ -264,8 +286,13 @@ namespace Meeting_App
                             case "1":
                                 Console.WriteLine("Enter the file location\n");
                                 string fileLocation = Console.ReadLine();
+                                Console.WriteLine("Give file name:");
+
+                                string loadFileNameInput = Console.ReadLine();
+                                string loadFileName = "\\" + loadFileNameInput + ".dat";
                                 //method or code to read file and save to variable
-                                string[] calenderArray = File.ReadAllLines(@fileLocation);
+                                currentCalendar = CalendarLoad(fileLocation, loadFileName);
+                                CalendarMenu(currentCalendar, fileLocation, loadFileName);
                                 //method for menu
                                 //method for saving location?
                                 break;
@@ -280,10 +307,10 @@ namespace Meeting_App
                                 string saveLocation = Console.ReadLine();
 
                                 Console.WriteLine("Give file name:");
-                                string fileName = Console.ReadLine();
-                                fileName = "\\" + fileName + ".dat";
+                                string saveFileNameInput = Console.ReadLine();
+                                string saveFileName = "\\" + saveFileNameInput + ".dat";
                                 //Method name for new menu
-                                CalendarMenu(currentCalendar, saveLocation, fileName);
+                                CalendarMenu(currentCalendar, saveLocation, saveFileName);
                                 //method for saving location
 
                                 break;
